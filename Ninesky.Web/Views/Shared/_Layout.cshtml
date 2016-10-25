@@ -1,0 +1,117 @@
+﻿@using Microsoft.AspNet.Identity
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/themes/base/all.css" rel="stylesheet" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="~/Scripts/jquery-3.1.0.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.0.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#userDetails").hover(function () {
+                $("#userManager").show();
+            }, function () {
+                $("#userManager").hide();
+            });
+        });
+        function Modify() {
+            alert("弹窗1");
+            $.get("/Member/User/Details").then(function (r) {
+                alert("弹窗2");
+                $("<div id='DivModify'></div>").html(r).dialog(
+                    alert("弹窗3"),
+                    {
+                        width: 'auto', height: 'auto', modal: true, title: "修改资料",
+                        close: function () {
+                            alert("弹窗4"),
+                            $('#DivModify').remove();
+                        }
+                    });
+            });
+        }
+        function ChangePassword() {
+            alert("弹窗1");
+            $.get("/Member/User/ChangePassword").then(function (r) {
+                alert("弹窗2");
+                $("<div id='DivChangePassword'></div>").html(r).dialog(
+                    alert("弹窗3"),
+                    {
+                        width: 'auto', height: 'auto', modal: true, title: "修改密码",
+                        close: function () {
+                            alert("弹窗4"),
+                            $('#DivChangePassword').remove();
+                        }
+                    });
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="~/Home/Index" class="navbar-brand">Ninesky</a></li>
+                    <li><a href="~/Home/About">关于</a></li>
+                    <li><a href="~/Home/Contact">联系方式</a></li>
+                </ul>
+                @if (Request.IsAuthenticated)
+                {
+                    using (Html.BeginForm("Logout", "User", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <ul class="nav navbar-nav navbar-right">
+                            <li id="userDetails">
+                                <a href="~/Member/User/Details">你好:@User.Identity.GetUserName()</a>
+                                <ul hidden id="userManager" class="nav nav-pills nav-stacked">
+                                    <li>
+                                        @*<a onclick="Modify();">修改资料</a>*@
+                                        <a href="~/Member/User/Details">修改资料</a>
+                                    </li>
+                                    <li>
+                                        @*<a onclick="ChangePassword();">修改密码</a>*@
+                                        <a href="~/Member/User/ChangePassword">修改密码</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li> <a href="~/Member/User/Logout">注销 </a> </li>
+                        </ul>
+                    }
+                }
+                else
+                {
+                    <ul class="nav navbar-nav navbar-right">
+                        <li> @Html.ActionLink("注册", "Register", "User", routeValues: new { Area = "Member" }, htmlAttributes: new { id = "registerLink" }) </li>
+                        <li> @Html.ActionLink("登录", "Login", "User", routeValues: new { Area = "Member" }, htmlAttributes: new { id = "loginLink" }) </li>
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year @DateTime.Now.Month @DateTime.Now.Day</p>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
